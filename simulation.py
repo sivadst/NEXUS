@@ -1,23 +1,44 @@
+# ==============================
+# NEXUS - SIMULATION MODULE
+# ==============================
+
+import random
 from collections import deque
 
-class EventSimulator:
-    def __init__(self):
-        # FIFO Queue for real-time event processing
-        self.event_queue = deque()
 
-    def enqueue_event(self, event_type, u, v, value):
-        """
-        event_type: 'hazard' or 'crowd'
-        """
-        self.event_queue.append((event_type, u, v, value))
+def simulate_crowd(crowd):
+    """
+    Simulate crowd changes using a queue (FIFO)
+    """
 
-    def process_events(self, graph):
-        """
-        Pops all pending events from the queue and updates the graph state.
-        """
-        processed_count = 0
-        while self.event_queue:
-            e_type, u, v, val = self.event_queue.popleft()
-            graph.update_edge_state(u, v, e_type, val)
-            processed_count += 1
-        return processed_count
+    # Create queue of locations
+    q = deque(crowd.keys())
+
+    while q:
+        location = q.popleft()
+
+        # Randomly increase or decrease crowd
+        change = random.choice([-1, 0, 1])
+
+        new_value = crowd[location] + change
+
+        # Keep crowd in range 1–5
+        crowd[location] = max(1, min(5, new_value))
+
+
+def simulate_hazard(hazard):
+    """
+    Simulate hazard at random location
+    """
+
+    # Reset all hazards
+    for loc in hazard:
+        hazard[loc] = 0
+
+    # Choose random location for hazard
+    danger_spot = random.choice(list(hazard.keys()))
+
+    # Mark hazard
+    hazard[danger_spot] = 1
+
+    return danger_spot
