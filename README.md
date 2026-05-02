@@ -24,6 +24,13 @@ NEXUS is a smart route optimization system designed to compute efficient paths u
 
 ## ▶️ How to Run
 
+## 📂 How to Use
+
+* Run the backend using Streamlit
+* Open `nexus.html` for frontend interaction
+
+
+
 1. Clone the repository:
 
 ```
