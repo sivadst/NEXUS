@@ -1,0 +1,20 @@
+# NEXUS Routing Engine — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# ── Web framework ──────────────────────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.9.2
+
+# ── Graph / routing ────────────────────────────────────────────────────────────
+networkx==3.4.2
+osmnx==1.9.4
+
+# ── HTTP (OSMnx dependency — pin to avoid SSL issues on some platforms) ───────
+requests==2.32.3
+
+# ── Geo ────────────────────────────────────────────────────────────────────────
+shapely==2.0.6
+
+# ── Optional: faster JSON serialisation ───────────────────────────────────────
+orjson==3.10.11
