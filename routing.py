@@ -1,51 +1,84 @@
-# ==============================
-# NEXUS - ROUTING MODULE
-# ==============================
-
 import heapq
+import math
+from typing import Dict, List, Optional, Tuple
+
+from geo_utils import haversine_distance
 
 
-def dijkstra(graph, start, end):
-    """
-    Dijkstra's Algorithm using Min-Heap (Priority Queue)
-    Returns shortest path and total cost
-    """
+def dijkstra(graph: Dict[str, List[Tuple[str, float]]], start: str, goal: str) -> Tuple[Optional[List[str]], Optional[float]]:
+    if start not in graph or goal not in graph:
+        return None, None
 
-    # Priority queue → (cost, node, path)
-    pq = [(0, start, [])]
+    distances = {node: float("inf") for node in graph}
+    previous = {node: None for node in graph}
+    distances[start] = 0
+    heap = [(0.0, start)]
 
-    # Visited node
-    visited = set()
-
-    # Minimum cost to each node
-    min_cost = {node: float('inf') for node in graph}
-    min_cost[start] = 0
-
-    while pq:
-        current_cost, current_node, path = heapq.heappop(pq)
-
-        # Skip if already visited
-        if current_node in visited:
+    while heap:
+        current_distance, node = heapq.heappop(heap)
+        if node == goal:
+            break
+        if current_distance > distances[node]:
             continue
+        for neighbor, weight in graph[node]:
+            tentative = current_distance + weight
+            if tentative < distances[neighbor]:
+                distances[neighbor] = tentative
+                previous[neighbor] = node
+                heapq.heappush(heap, (tentative, neighbor))
 
-        # Mark visited
-        visited.add(current_node)
+    if distances[goal] == float("inf"):
+        return None, None
 
-        # Update path
-        path = path + [current_node]
+    path = []
+    pointer = goal
+    while pointer is not None:
+        path.append(pointer)
+        pointer = previous[pointer]
+    return list(reversed(path)), distances[goal]
 
-        # If destination reached
-        if current_node == end:
-            return path, current_cost
 
-        # Explore neighbors
-        for neighbor, weight in graph[current_node]:
-            if neighbor not in visited:
-                new_cost = current_cost + weight
+def heuristic(node: str, goal: str, coords: Dict[str, Tuple[float, float]]) -> float:
+    if node not in coords or goal not in coords:
+        return 0.0
+    return haversine_distance(coords[node][0], coords[node][1], coords[goal][0], coords[goal][1])
 
-                # Relaxation step
-                if new_cost < min_cost[neighbor]:
-                    min_cost[neighbor] = new_cost
-                    heapq.heappush(pq, (new_cost, neighbor, path))
 
-    return None, float('inf')
+def a_star(
+    graph: Dict[str, List[Tuple[str, float]]],
+    start: str,
+    goal: str,
+    coords: Dict[str, Tuple[float, float]],
+) -> Tuple[Optional[List[str]], Optional[float]]:
+    if start not in graph or goal not in graph:
+        return None, None
+
+    open_set = [(heuristic(start, goal, coords), start)]
+    came_from = {}
+    g_score = {node: float("inf") for node in graph}
+    g_score[start] = 0.0
+    f_score = {node: float("inf") for node in graph}
+    f_score[start] = heuristic(start, goal, coords)
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+        if current == goal:
+            break
+        for neighbor, weight in graph[current]:
+            tentative_g = g_score[current] + weight
+            if tentative_g < g_score[neighbor]:
+                came_from[neighbor] = current
+                g_score[neighbor] = tentative_g
+                f_score[neighbor] = tentative_g + heuristic(neighbor, goal, coords)
+                heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+    if g_score[goal] == float("inf"):
+        return None, None
+
+    path = []
+    node = goal
+    while node in came_from:
+        path.append(node)
+        node = came_from[node]
+    path.append(start)
+    return list(reversed(path)), g_score[goal]

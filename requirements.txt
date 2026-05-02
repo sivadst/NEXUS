@@ -1,3 +1,6 @@
-streamlit
-networkx
-matplotlib
+streamlit>=1.18.0
+plotly>=5.20.0
+pytest>=8.0
+osmnx>=1.4.0
+networkx>=3.0
+geopandas>=0.14.0
