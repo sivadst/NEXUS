@@ -14,7 +14,7 @@ def dijkstra(graph, start, end):
     # Priority queue → (cost, node, path)
     pq = [(0, start, [])]
 
-    # Visited nodes
+    # Visited node
     visited = set()
 
     # Minimum cost to each node

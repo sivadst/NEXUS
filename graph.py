@@ -40,3 +40,4 @@ def build_graph(nodes, edges, crowd, hazard):
         graph[node2].append((node1, weight))
 
     return graph
+

@@ -19,7 +19,7 @@ nodes = {
 }
 
 
-# Edges (connections between locations)
+# Edges (connections between locations
 # Format: (node1, node2, distance)
 
 edges = [
